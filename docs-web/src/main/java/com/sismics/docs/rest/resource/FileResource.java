@@ -570,6 +570,9 @@ public class FileResource extends BaseResource {
             @QueryParam("share") String shareId,
             @QueryParam("size") String size) {
         authenticate();
+        if (size == null) {
+            checkNotGuest();
+        }
         
         if (size != null && !Lists.newArrayList("web", "thumb", "content").contains(size)) {
             throw new ClientException("SizeError", "Size must be web, thumb or content");
@@ -676,6 +679,7 @@ public class FileResource extends BaseResource {
             @QueryParam("id") String documentId,
             @QueryParam("share") String shareId) {
         authenticate();
+        checkNotGuest();
         
         // Get the document
         DocumentDao documentDao = new DocumentDao();
@@ -713,6 +717,7 @@ public class FileResource extends BaseResource {
     public Response zip(
             @FormParam("files") List<String> filesIdsList) {
         authenticate();
+        checkNotGuest();
         List<File> fileList = findFiles(filesIdsList);
         return sendZippedFiles("files", fileList);
     }

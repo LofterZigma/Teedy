@@ -19,7 +19,7 @@
     <a href="#/document/edit/{{ document.id }}" ng-show="document.writable" class="btn btn-primary"><span class="fas fa-pencil-alt"></span> {{ 'edit' | translate }}</a>
   </div>
 
-  <div class="pull-right dropdown" uib-dropdown>
+  <div class="pull-right dropdown" uib-dropdown ng-show="userInfo.username != 'guest'">
     <button class="btn btn-default" uib-dropdown-toggle>
       <span class="fas fa-cloud-download-alt"></span>
       {{ 'export' | translate }}

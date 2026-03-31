@@ -105,6 +105,15 @@ public abstract class BaseResource {
         Set<String> baseFunctionSet = ((UserPrincipal) principal).getBaseFunctionSet();
         return baseFunctionSet != null && baseFunctionSet.contains(baseFunction.name());
     }
+
+    /**
+     * Fails if the current user is a guest.
+     */
+    protected void checkNotGuest() {
+        if (principal != null && principal.isGuest()) {
+            throw new ForbiddenClientException();
+        }
+    }
     
     /**
      * Returns a list of ACL target ID.

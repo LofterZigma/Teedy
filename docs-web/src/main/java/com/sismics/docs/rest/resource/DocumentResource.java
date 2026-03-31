@@ -319,6 +319,7 @@ public class DocumentResource extends BaseResource {
             final @QueryParam("fitimagetopage") Boolean fitImageToPage,
             @QueryParam("margin") String marginStr) {
         authenticate();
+        checkNotGuest();
 
         // Validate input
         final int margin = ValidationUtil.validateInteger(marginStr, "margin");

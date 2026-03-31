@@ -196,6 +196,52 @@ public class TestAppResource extends BaseJerseyTest {
                 .cookie(TokenBasedSecurityFilter.COOKIE_NAME, guestToken)
                 .get(JsonObject.class);
 
+        // Guest can open a document and preview its files
+        JsonObject documentJson = target().path("/document").request()
+                .cookie(TokenBasedSecurityFilter.COOKIE_NAME, adminToken)
+                .put(Entity.form(new Form()
+                        .param("title", "Guest access document")
+                        .param("language", "eng")), JsonObject.class);
+        String documentId = documentJson.getString("id");
+        String fileId = clientUtil.addFileToDocument(FILE_PIA_00452_JPG, adminToken, documentId);
+
+        JsonObject guestDocument = target().path("/document/" + documentId).request()
+                .cookie(TokenBasedSecurityFilter.COOKIE_NAME, guestToken)
+                .get(JsonObject.class);
+        Assert.assertEquals(documentId, guestDocument.getString("id"));
+
+        Response filePreviewResponse = target().path("/file/" + fileId + "/data")
+                .queryParam("size", "thumb")
+                .request()
+                .cookie(TokenBasedSecurityFilter.COOKIE_NAME, guestToken)
+                .get();
+        Assert.assertEquals(Status.OK, Status.fromStatusCode(filePreviewResponse.getStatus()));
+
+        // Guest cannot download the original file
+        response = target().path("/file/" + fileId + "/data").request()
+                .cookie(TokenBasedSecurityFilter.COOKIE_NAME, guestToken)
+                .get();
+        Assert.assertEquals(Status.FORBIDDEN.getStatusCode(), response.getStatus());
+
+        // Guest cannot export the document as PDF
+        response = target().path("/document/" + documentId + "/pdf")
+                .queryParam("margin", "10")
+                .queryParam("metadata", "true")
+                .queryParam("comments", "true")
+                .queryParam("fitimagetopage", "true")
+                .request()
+                .cookie(TokenBasedSecurityFilter.COOKIE_NAME, guestToken)
+                .get();
+        Assert.assertEquals(Status.FORBIDDEN.getStatusCode(), response.getStatus());
+
+        // Guest cannot download the document as ZIP
+        response = target().path("/file/zip")
+                .queryParam("id", documentId)
+                .request()
+                .cookie(TokenBasedSecurityFilter.COOKIE_NAME, guestToken)
+                .get();
+        Assert.assertEquals(Status.FORBIDDEN.getStatusCode(), response.getStatus());
+
         // Disable guest login (clean up state)
         target().path("/app/guest_login").request()
                 .cookie(TokenBasedSecurityFilter.COOKIE_NAME, adminToken)

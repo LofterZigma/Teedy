@@ -1,3 +1,4 @@
+# Teedy used for CS304 cource in SusTech
 <h3 align="center">
   <img src="https://teedy.io/img/github-title.png" alt="Teedy" width=500 />
 </h3>

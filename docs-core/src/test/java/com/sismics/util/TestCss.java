@@ -1,5 +1,6 @@
 package com.sismics.util;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import com.sismics.util.css.Selector;
@@ -15,6 +16,6 @@ public class TestCss {
         Selector selector = new Selector(".test")
             .rule("background-color", "yellow")
             .rule("font-family", "Comic Sans");
-        System.out.println(selector);
+        Assert.assertEquals(".test {\n  background-color: yellow;\n  font-family: Comic Sans;\n}\n", selector.toString());
     }
 }

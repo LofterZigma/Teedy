@@ -286,6 +286,7 @@ public class UserResource extends BaseResource {
         @FormParam("username") String username,
         @FormParam("password") String password,
         @FormParam("code") String validationCodeStr,
+        @FormParam("guest_mode") boolean guestMode,
         @FormParam("remember") boolean longLasted) {
         // Validate the input data
         username = StringUtils.strip(username);
@@ -295,7 +296,7 @@ public class UserResource extends BaseResource {
         UserDao userDao = new UserDao();
         User user = null;
         if (Constants.GUEST_USER_ID.equals(username)) {
-            if (ConfigUtil.getConfigBooleanValue(ConfigType.GUEST_LOGIN)) {
+            if (guestMode || ConfigUtil.getConfigBooleanValue(ConfigType.GUEST_LOGIN)) {
                 // Login as guest
                 user = userDao.getActiveByUsername(Constants.GUEST_USER_ID);
             }

@@ -95,6 +95,18 @@
       <param-name>jersey.config.server.response.setStatusOverSendError</param-name>
       <param-value>true</param-value>
     </init-param>
+    <init-param>
+      <param-name>jersey.config.multipart.maxEntitySize</param-name>
+      <param-value>104857600</param-value>
+    </init-param>
+    <init-param>
+      <param-name>jersey.config.multipart.temp.threshold</param-name>
+      <param-value>8192</param-value>
+    </init-param>
+    <init-param>
+      <param-name>jersey.config.multipart.temp.location</param-name>
+      <param-value></param-value>
+    </init-param>
     <load-on-startup>1</load-on-startup>
     <async-supported>true</async-supported>
   </servlet>

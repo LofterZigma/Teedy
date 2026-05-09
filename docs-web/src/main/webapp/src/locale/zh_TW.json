@@ -7,7 +7,7 @@
     "validation_code": "驗證碼",
     "remember_me": "記住我",
     "submit": "登錄",
-    "login_as_guest": "以遊客身份登錄",
+    "login_as_guest": "遊客模式",
     "login_failed_title": "登錄失敗",
     "login_failed_message": "用戶名或密碼不正確",
     "password_lost_btn": "密碼丟失？",

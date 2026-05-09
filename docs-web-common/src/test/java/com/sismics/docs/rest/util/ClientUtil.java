@@ -116,11 +116,25 @@ public class ClientUtil {
      * @return Authentication token
      */
     public String login(String username, String password, Boolean remember) {
+        return login(username, password, remember, false);
+    }
+
+    /**
+     * Connects a user to the application.
+     *
+     * @param username Username
+     * @param password Password
+     * @param remember Remember user
+     * @param guestMode If true, login in guest mode
+     * @return Authentication token
+     */
+    public String login(String username, String password, Boolean remember, boolean guestMode) {
         Response response = resource.path("/user/login").request()
                 .post(Entity.form(new Form()
                         .param("username", username)
                         .param("password", password)
-                        .param("remember", remember.toString())));
+                        .param("remember", remember.toString())
+                        .param("guest_mode", String.valueOf(guestMode))));
         Assert.assertEquals(200, response.getStatus());
 
         return getAuthenticationCookie(response);

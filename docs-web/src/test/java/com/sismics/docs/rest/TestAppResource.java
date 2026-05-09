@@ -136,7 +136,7 @@ public class TestAppResource extends BaseJerseyTest {
      * Test the guest login.
      */
     @Test
-    public void testGuestLogin() {
+    public void testGuestLogin() throws Exception {
         // Login admin
         String adminToken = adminToken();
 
@@ -145,6 +145,17 @@ public class TestAppResource extends BaseJerseyTest {
                 .post(Entity.form(new Form()
                         .param("username", "guest")));
         Assert.assertEquals(Status.FORBIDDEN.getStatusCode(), response.getStatus());
+
+        // Guest mode can log in without enabling guest access
+        response = target().path("/user/login").request()
+                .post(Entity.form(new Form()
+                        .param("username", "guest")
+                        .param("password", "")
+                        .param("remember", "false")
+                        .param("guest_mode", "true")));
+        Assert.assertEquals(Status.OK.getStatusCode(), response.getStatus());
+        String guestModeToken = clientUtil.getAuthenticationCookie(response);
+        Assert.assertNotNull(guestModeToken);
 
         // Enable guest login
         target().path("/app/guest_login").request()

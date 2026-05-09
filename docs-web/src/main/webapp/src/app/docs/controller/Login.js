@@ -15,7 +15,8 @@ angular.module('docs').controller('Login', function(Restangular, $scope, $rootSc
   $scope.loginAsGuest = function() {
     $scope.user = {
       username: 'guest',
-      password: ''
+      password: '',
+      guest_mode: true
     };
     $scope.login();
   };

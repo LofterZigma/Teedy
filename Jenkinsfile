@@ -40,7 +40,15 @@ pipeline {
 
         stage('Javadoc') {
             steps {
-                sh 'mvn -B -ntp javadoc:javadoc'
+                sh '''
+                    set -e
+                    if command -v javadoc >/dev/null 2>&1; then
+                        export JAVA_HOME="$(dirname "$(dirname "$(readlink -f "$(command -v javadoc)")")")"
+                        mvn -B -ntp javadoc:javadoc
+                    else
+                        echo "Skipping Javadoc stage because no JDK/javadoc is available on this agent."
+                    fi
+                '''
             }
         }
 

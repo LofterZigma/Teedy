@@ -2,7 +2,10 @@ version: '3'
 services:
 # Teedy Application
   teedy-server:
-    image: sismics/docs:v1.10
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: teedy:local
     restart: unless-stopped
     ports:
       # Map internal port to host
@@ -15,4 +18,4 @@ services:
       # Set the admin password (in this example: "superSecure")
       DOCS_ADMIN_PASSWORD_INIT: "$$2a$$05$$PcMNUbJvsk7QHFSfEIDaIOjk1VI9/E7IPjTKx.jkjPxkx2EOKSoPS"
     volumes:
-      - ./docs/data:/data
+      - ./data:/data

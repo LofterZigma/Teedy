@@ -8,6 +8,9 @@
     "type": "git",
     "url": "git://github.com/sismics/docs.git"
   },
+  "scripts": {
+    "build:prod": "grunt --apiurl=api"
+  },
   "apidoc": {
     "name": "Teedy API",
     "title": "Teedy API",

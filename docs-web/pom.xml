@@ -244,17 +244,17 @@
                   <target name="building">
                     <!-- npm install -->
                     <exec executable="cmd" dir="${project.basedir}/src/main/webapp" osfamily="windows" failonerror="true">
-                      <arg line="/c npm install" />
+                      <arg line="/c npm ci" />
                     </exec>
                     <exec executable="npm" dir="${project.basedir}/src/main/webapp" osfamily="unix" failonerror="true">
-                      <arg line="install" />
+                      <arg line="ci" />
                     </exec>
                     <!-- grunt -->
                     <exec executable="cmd" dir="${project.basedir}/src/main/webapp" osfamily="windows" failonerror="true">
-                      <arg line="/c grunt --apiurl=api" />
+                      <arg line="/c npm run build:prod" />
                     </exec>
-                    <exec executable="grunt" dir="${project.basedir}/src/main/webapp" osfamily="unix" failonerror="true">
-                      <arg line="--apiurl=api" />
+                    <exec executable="npm" dir="${project.basedir}/src/main/webapp" osfamily="unix" failonerror="true">
+                      <arg line="run build:prod" />
                     </exec>
                   </target>
                 </configuration>

@@ -1,76 +1,58 @@
 pipeline {
     agent any
 
-    options {
-        timestamps()
-        disableConcurrentBuilds()
-        buildDiscarder(logRotator(numToKeepStr: '20', artifactNumToKeepStr: '10'))
+    environment {
+        DOCKER_IMAGE = 'lofterzigma/teedy-app'
+        DOCKER_TAG = "${env.BUILD_NUMBER}"
     }
 
     stages {
-        stage('Clean') {
+        stage('Build') {
             steps {
-                sh 'mvn -B -ntp clean'
+                checkout scmGit(
+                    branches: [[name: '*/master']],
+                    extensions: [],
+                    userRemoteConfigs: [[
+                        url: 'https://github.com/LofterZigma/Teedy.git'
+                    ]]
+                )
+
+                sh 'mvn -B -DskipTests clean package'
             }
         }
 
-        stage('Compile') {
+        stage('Building image') {
             steps {
-                sh 'mvn -B -ntp compile'
+                script {
+                    docker.build("${DOCKER_IMAGE}:${DOCKER_TAG}")
+                }
             }
         }
 
-        stage('Test') {
+        stage('Upload image') {
             steps {
-                sh 'mvn -B -ntp test -Dmaven.test.failure.ignore=true'
+                script {
+                    docker.withRegistry('https://registry.hub.docker.com', 'dockerhub_credentials') {
+                        docker.image("${DOCKER_IMAGE}:${DOCKER_TAG}").push()
+                        docker.image("${DOCKER_IMAGE}:${DOCKER_TAG}").push('latest')
+                    }
+                }
             }
         }
 
-        stage('PMD') {
+        stage('Run container') {
             steps {
-                sh 'mvn -B -ntp pmd:pmd'
-            }
-        }
+                script {
+                    sh 'docker stop teedy-container-8081 || true'
+                    sh 'docker rm teedy-container-8081 || true'
 
-        stage('JaCoCo') {
-            steps {
-                sh 'mvn -B -ntp jacoco:report'
-            }
-        }
+                    docker.image("${DOCKER_IMAGE}:${DOCKER_TAG}").run(
+                        '--name teedy-container-8081 -d -p 8081:8080'
+                    )
 
-        stage('Javadoc') {
-            steps {
-                sh '''
-                    set -e
-                    if command -v javadoc >/dev/null 2>&1; then
-                        export JAVA_HOME="$(dirname "$(dirname "$(readlink -f "$(command -v javadoc)")")")"
-                        mvn -B -ntp javadoc:javadoc
-                    else
-                        echo "Skipping Javadoc stage because no JDK/javadoc is available on this agent."
-                    fi
-                '''
+                    sh 'docker ps --filter "name=teedy-container"'
+                }
             }
-        }
-
-        stage('Site') {
-            steps {
-                sh 'mvn -B -ntp site'
-            }
-        }
-
-        stage('Package') {
-            steps {
-                sh 'mvn -B -ntp package -DskipTests'
-            }
-        }
-    }
-
-    post {
-        always {
-            archiveArtifacts artifacts: '**/target/site/**/*.*', fingerprint: true
-            archiveArtifacts artifacts: '**/target/**/*.jar', fingerprint: true
-            archiveArtifacts artifacts: '**/target/**/*.war', fingerprint: true
-            junit '**/target/surefire-reports/*.xml'
         }
     }
 }
